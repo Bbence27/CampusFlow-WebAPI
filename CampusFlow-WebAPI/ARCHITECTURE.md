@@ -120,4 +120,3 @@ The system was refactored from a monolithic application into a modular architect
 
 - **Inward Flow:** Dependencies flow strictly from outer projects (`WebAPI`, `Endpoints`) inward toward core business rules, services, contracts, and domain models.
 - **Zero Circular Dependencies:** Verified via clean, zero-error compilation passes across all 11 projects in .NET 10.0.
-
