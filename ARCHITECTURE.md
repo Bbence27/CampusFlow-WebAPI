@@ -122,8 +122,9 @@ The diagram below illustrates how the 11 modular projects and the database inter
 
 ```mermaid
 flowchart TD
-    classDef project fill:#f9f,stroke:#333,stroke-width:2px;
-    classDef db fill:#bbf,stroke:#333,stroke-width:2px;
+    classDef client fill:#f3f4f6,stroke:#374151,stroke-width:2px,color:#111827;
+    classDef project fill:#eff6ff,stroke:#1d4ed8,stroke-width:2px,color:#1e3a8a;
+    classDef db fill:#fef3c7,stroke:#d97706,stroke-width:2px,color:#78350f;
 
     Client["API Client<br/>(Web / Mobile / Swagger)"] --> WebAPI["CampusFlow.WebAPI<br/>(Host / DI Root)"]
 
@@ -147,6 +148,6 @@ flowchart TD
 
     ResourceAccess --> SQLite["SQLite Database"]
 
+    class Client client;
     class WebAPI,Endpoints,ServicesEnrollment,RulesEnrollment,ResourceAccess,ContractsEnrollments,ContractsStudents,ContractsCourses,ContractsStatistics,DomainModels,UtilLogging project;
     class SQLite db;
-```
