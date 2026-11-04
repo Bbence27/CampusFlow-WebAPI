@@ -1,122 +1,160 @@
 # Architecture Overview: CampusFlow Modular API
 
-This document details the architectural decisions, structural breakdown, encapsulated volatilities, and trade-offs (pros and cons) for each of the 11 projects comprising the **CampusFlow-WebAPI** system.
+This document explains the architectural decisions, module breakdown, volatilities, and trade-offs (pros and cons) for the 11 projects making up the **CampusFlow-WebAPI** system.
 
 ------------------------------------------------------------------------
 
-## 1. Architectural Rationale & Volatility Encapsulation
+## 1. Architectural Approach & Volatility
 
-The system was refactored from a monolithic application into a modular architecture to isolate change. In software design, *volatility* refers to the likelihood and reasons why a part of a system might change. By separating code based on volatility, changes to database providers, business logic, rules, or web frameworks are localized and do not ripple through the entire codebase.
+We refactored the application from a monolith into 11 separate projects to isolate **volatility**—meaning we separated parts of the code based on *why* and *how often* they change. For example, changing the database or updating a business rule no longer requires changing the web server or API routing code.
 
 ------------------------------------------------------------------------
 
-## 2. Detailed Module Breakdown (The 11 Projects)
+## 2. Module Breakdown, Volatility, and Pros & Cons
 
 ### 1. `CampusFlow.Domain.Models`
 
-- **Why it was created:** To serve as the foundational anchor for core enterprise entities and database records (e.g., Student, Course, Enrollment).
-- **Volatility Encapsulated:** Core business entity schemas and relational data structures.
+- **Why it was created:** To hold the core database entities and enterprise data structures (like Student, Course, and Enrollment).
+- **Volatility:** Core enterprise data shapes and database entity fields.
 - **Pros:**
-  - Establishes a single source of truth for enterprise domain concepts.
-  - Completely independent of external frameworks, databases, or UI.
+  - Acts as a single source of truth for domain concepts.
+  - Completely independent of web frameworks or databases.
 - **Cons:**
-  - Requires mapping layers when transforming database entities to external DTOs.
+  - Requires mapping code to convert database models into API response objects.
 
 ### 2. `CampusFlow.Contracts.Enrollments`
 
-- **Why it was created:** To encapsulate data transfer objects (DTOs), requests, responses, errors, and enums specifically for student enrollments.
-- **Volatility Encapsulated:** External API contracts and data shapes for enrollment operations.
+- **Why it was created:** To define data transfer objects (DTOs), requests, responses, and errors for enrollments.
+- **Volatility:** External API request/response structures.
 - **Pros:**
-  - Prevents tight coupling between API request payloads and internal database schemas.
-  - Allows API data formats to evolve independently of storage models.
+  - Keeps API endpoints decoupled from internal database models.
+  - Allows API data formats to change safely without breaking database tables.
 - **Cons:**
-  - Adds boilerplate code via data duplication across different project contracts.
+  - Adds extra code files for managing separate data transfer objects.
 
 ### 3. `CampusFlow.Contracts.Students`
 
-- **Why it was created:** To define data contracts and payloads specific to student management features.
-- **Volatility Encapsulated:** Student-specific data transfer interfaces.
+- **Why it was created:** To house data contracts and payloads specific to student management.
+- **Volatility:** Student-specific API input and output formats.
 - **Pros:**
-  - Highly targeted contracts make student endpoints self-contained and easy to modify.
+  - Keeps student-related data shapes clean and self-contained.
 - **Cons:**
-  - Proliferation of multiple small projects/assemblies to manage.
+  - Results in a higher number of small contract projects in the solution.
 
 ### 4. `CampusFlow.Contracts.Courses`
 
-- **Why it was created:** To manage data contracts, requests, and responses for course management.
-- **Volatility Encapsulated:** Course-specific interface contracts and schemas.
+- **Why it was created:** To manage data contracts, requests, and responses for courses.
+- **Volatility:** Course-specific interface contracts and schemas.
 - **Pros:**
-  - Isolate course data definitions so changes don't affect other domains.
+  - Isolates course data definitions so they don't impact other features.
 - **Cons:**
-  - Increases project navigation complexity within the solution workspace.
+  - Requires navigating across multiple small contract projects.
 
 ### 5. `CampusFlow.Contracts.Statistics`
 
 - **Why it was created:** To handle specialized reporting and analytics contracts.
-- **Volatility Encapsulated:** Metrics, reporting payloads, and statistical data schemas.
+- **Volatility:** Metrics, reporting payloads, and statistical data formats.
 - **Pros:**
-  - Decouples reporting output formats from core CRUD operations.
+  - Decouples reporting outputs from standard database records.
 - **Cons:**
-  - Fragmented contract definitions require referencing multiple minor projects.
+  - Fragmented contract definitions spread across multiple minor projects.
 
 ### 6. `CampusFlow.Rules.Enrollment`
 
-- **Why it was created:** To encapsulate pure academic and business validation logic (e.g., capacity checks, max course limits, duplicate enrollment rules).
-- **Volatility Encapsulated:** Business policy changes and academic constraints.
+- **Why it was created:** To encapsulate academic and business validation logic (like capacity checks, duplicate enrollments, and student limits).
+- **Volatility:** Business policies and university rules.
 - **Pros:**
-  - Rules are pure, decoupled functions that can be unit-tested in complete isolation without a database or web server.
-  - Easy to update business logic when university policies change.
+  - Rules are pure code units that can be tested easily without a database or web server.
+  - Easy to update when university policies change.
 - **Cons:**
-  - Introduces indirection, requiring services to coordinate multiple discrete rule objects.
+  - Adds layers of indirection between services and validation logic.
 
 ### 7. `CampusFlow.Services.Enrollment`
 
-- **Why it was created:** To orchestrate core workflows, combining business rules, data access, and transaction management for enrollments.
-- **Volatility Encapsulated:** Application workflow and orchestration logic.
+- **Why it was created:** To coordinate core application workflows, combining rules, data access, and transactions for enrollments.
+- **Volatility:** Application use-cases and process workflows.
 - **Pros:**
-  - Centralizes use-case execution flow into dedicated service classes.
+  - Centralizes use-case logic into dedicated service classes.
 - **Cons:**
-  - Risk of application logic scattering if boundaries between rules and services blur.
+  - Risk of application logic blurring if boundaries between rules and services aren't maintained.
 
 ### 8. `CampusFlow.ResourceAccess.Sqlite`
 
-- **Why it was created:** To manage Entity Framework Core configurations, `CampusFlowDbContext`, and SQLite persistence.
-- **Volatility Encapsulated:** Database vendor technology, schema migrations, and persistence mechanisms.
+- **Why it was created:** To manage Entity Framework Core, database contexts, and SQLite persistence.
+- **Volatility:** Database technology, connection strings, and data storage mechanisms.
 - **Pros:**
-  - Swapping or upgrading databases (e.g., from SQLite to PostgreSQL) can be done with minimal changes outside this project.
+  - Swapping to a different database (like PostgreSQL or SQL Server) only requires changes inside this module.
 - **Cons:**
-  - Tightly binds data access to EF Core concepts within this specific boundary.
+  - Tightly couples data storage logic to Entity Framework Core tools.
 
 ### 9. `CampusFlow.Endpoints`
 
-- **Why it was created:** To define API routing handlers (FastEndpoints / controllers) mapping incoming HTTP requests to underlying services.
-- **Volatility Encapsulated:** HTTP protocol handling, routing paths, and status code mapping.
+- **Why it was created:** To define API routing and map incoming HTTP requests to underlying business services.
+- **Volatility:** HTTP transport protocols, routing paths, and web endpoints.
 - **Pros:**
-  - Keeps routing and presentation concerns separate from business logic.
+  - Keeps web routing code completely separate from core business logic.
 - **Cons:**
-  - Requires explicit mapping code between HTTP requests, DTOs, and domain services.
+  - Requires explicit mapping code to translate web requests into service calls.
 
 ### 10. `CampusFlow.Util.Logging`
 
-- **Why it was created:** To supply custom logging extensions, file writers, sinks, and log formatting options across the application.
-- **Volatility Encapsulated:** Cross-cutting logging infrastructure and formatting policies.
+- **Why it was created:** To supply custom logging extensions, file writers, and formatting options across the application.
+- **Volatility:** Cross-cutting logging infrastructure and output formatting.
 - **Pros:**
-  - Reusable logging utility across all solution layers without duplicating code.
+  - Reusable logging logic that can be shared across all modules without code duplication.
 - **Cons:**
-  - Introduces custom infrastructure code that must be maintained alongside built-in framework logging.
+  - Introduces custom logging code that must be maintained alongside built-in framework features.
 
 ### 11. `CampusFlow.WebAPI`
 
-- **Why it was created:** To act as the sole composition root, bootstrapping the application, wiring dependency injection containers, and hosting the web server.
-- **Volatility Encapsulated:** Hosting framework, application startup configuration, and middleware pipeline wiring.
+- **Why it was created:** To act as the composition root, bootstrapping the application, configuring dependency injection, and hosting the web server.
+- **Volatility:** Hosting framework and application startup configurations.
 - **Pros:**
-  - Centralizes runtime configuration and DI setup.
+  - Centralizes runtime setup and dependency wiring in one place.
 - **Cons:**
-  - Serves as a point of high coupling where all modules converge, requiring strict adherence to interfaces to prevent leakage.
+  - Serves as a high-coupling convergence point where all modules come together.
 
 ------------------------------------------------------------------------
 
-## 3. Dependency Flow & Architecture Summary
+## 3. C4 Component Diagram
 
-- **Inward Flow:** Dependencies flow strictly from outer projects (`WebAPI`, `Endpoints`) inward toward core business rules, services, contracts, and domain models.
-- **Zero Circular Dependencies:** Verified via clean, zero-error compilation passes across all 11 projects in .NET 10.0.
+The diagram below illustrates how the 11 modular projects and the database interact with each other at runtime:
+
+\`\`\`mermaid C4Component title C4 Component Diagram for CampusFlow (11-Project Architecture)
+
+```         
+Person(client, "API Client", "Web client, mobile app, or Swagger UI")
+
+Enterprise_Boundary(b0, "CampusFlow Solution (11 Projects)") {
+    Component(webApi, "CampusFlow.WebAPI", "Host / Program.cs", "Composition root. Bootstraps the application and wires DI.")
+    Component(endpoints, "CampusFlow.Endpoints", "FastEndpoints / Routing", "Defines HTTP endpoints and maps requests to services.")
+    Component(servicesEnrollment, "CampusFlow.Services.Enrollment", "Business Logic", "Orchestrates enrollment workflows and rule execution.")
+    Component(rulesEnrollment, "CampusFlow.Rules.Enrollment", "Business Rules", "Encapsulates validation logic (capacity, course limits).")
+    Component(resourceAccess, "CampusFlow.ResourceAccess.Sqlite", "Data Access", "Manages EF Core DbContext and SQLite persistence.")
+    Component(contractsEnrollments, "CampusFlow.Contracts.Enrollments", "Contracts", "DTOs, requests, and responses for enrollments.")
+    Component(contractsStudents, "CampusFlow.Contracts.Students", "Contracts", "DTOs and request payloads for students.")
+    Component(contractsCourses, "CampusFlow.Contracts.Courses", "Contracts", "DTOs and request payloads for courses.")
+    Component(contractsStatistics, "CampusFlow.Contracts.Statistics", "Contracts", "DTOs and request payloads for system metrics.")
+    Component(domainModels, "CampusFlow.Domain.Models", "Core Domain", "Enterprise domain entities and database models.")
+    Component(utilLogging, "CampusFlow.Util.Logging", "Infrastructure", "Provides custom logging extensions and file writers.")
+}
+
+System_Db(sqliteDb, "SQLite Database", "Relational database persisting entity state via EF Core.")
+
+Rel(client, webApi, "Sends HTTP Requests", "HTTPS/JSON")
+Rel(webApi, endpoints, "Dispatches traffic")
+Rel(endpoints, servicesEnrollment, "Invokes service methods")
+Rel(servicesEnrollment, rulesEnrollment, "Evaluates rules")
+Rel(servicesEnrollment, resourceAccess, "Queries / Persists data")
+Rel(resourceAccess, sqliteDb, "Reads/Writes SQL", "EF Core")
+
+Rel(endpoints, contractsEnrollments, "Uses DTOs")
+Rel(endpoints, contractsStudents, "Uses DTOs")
+Rel(endpoints, contractsCourses, "Uses DTOs")
+Rel(endpoints, contractsStatistics, "Uses DTOs")
+Rel(servicesEnrollment, contractsEnrollments, "Returns contracts")
+Rel(resourceAccess, domainModels, "Uses entities")
+Rel(webApi, utilLogging, "Configures logging")
+
+UpdateLayoutConfig($c4ShapeInRow="4", $c4BoundaryInRow="1")
+```
