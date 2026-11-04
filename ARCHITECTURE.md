@@ -120,41 +120,33 @@ We refactored the application from a monolith into 11 separate projects to isola
 
 The diagram below illustrates how the 11 modular projects and the database interact with each other at runtime:
 
-\`\`\`mermaid C4Component title C4 Component Diagram for CampusFlow (11-Project Architecture)
+```mermaid
+flowchart TD
+    classDef project fill:#f9f,stroke:#333,stroke-width:2px;
+    classDef db fill:#bbf,stroke:#333,stroke-width:2px;
 
-```         
-Person(client, "API Client", "Web client, mobile app, or Swagger UI")
+    Client["API Client<br/>(Web / Mobile / Swagger)"] --> WebAPI["CampusFlow.WebAPI<br/>(Host / DI Root)"]
 
-Enterprise_Boundary(b0, "CampusFlow Solution (11 Projects)") {
-    Component(webApi, "CampusFlow.WebAPI", "Host / Program.cs", "Composition root. Bootstraps the application and wires DI.")
-    Component(endpoints, "CampusFlow.Endpoints", "FastEndpoints / Routing", "Defines HTTP endpoints and maps requests to services.")
-    Component(servicesEnrollment, "CampusFlow.Services.Enrollment", "Business Logic", "Orchestrates enrollment workflows and rule execution.")
-    Component(rulesEnrollment, "CampusFlow.Rules.Enrollment", "Business Rules", "Encapsulates validation logic (capacity, course limits).")
-    Component(resourceAccess, "CampusFlow.ResourceAccess.Sqlite", "Data Access", "Manages EF Core DbContext and SQLite persistence.")
-    Component(contractsEnrollments, "CampusFlow.Contracts.Enrollments", "Contracts", "DTOs, requests, and responses for enrollments.")
-    Component(contractsStudents, "CampusFlow.Contracts.Students", "Contracts", "DTOs and request payloads for students.")
-    Component(contractsCourses, "CampusFlow.Contracts.Courses", "Contracts", "DTOs and request payloads for courses.")
-    Component(contractsStatistics, "CampusFlow.Contracts.Statistics", "Contracts", "DTOs and request payloads for system metrics.")
-    Component(domainModels, "CampusFlow.Domain.Models", "Core Domain", "Enterprise domain entities and database models.")
-    Component(utilLogging, "CampusFlow.Util.Logging", "Infrastructure", "Provides custom logging extensions and file writers.")
-}
+    subgraph Solution ["CampusFlow Solution (11 Projects)"]
+        WebAPI --> Endpoints["CampusFlow.Endpoints<br/>(Routing & Handlers)"]
+        
+        Endpoints --> ServicesEnrollment["CampusFlow.Services.Enrollment<br/>(Business Logic)"]
+        
+        ServicesEnrollment --> RulesEnrollment["CampusFlow.Rules.Enrollment<br/>(Business Rules)"]
+        ServicesEnrollment --> ResourceAccess["CampusFlow.ResourceAccess.Sqlite<br/>(EF Core Data Access)"]
+        
+        Endpoints --> ContractsEnrollments["CampusFlow.Contracts.Enrollments"]
+        Endpoints --> ContractsStudents["CampusFlow.Contracts.Students"]
+        Endpoints --> ContractsCourses["CampusFlow.Contracts.Courses"]
+        Endpoints --> ContractsStatistics["CampusFlow.Contracts.Statistics"]
+        
+        ServicesEnrollment -.-> ContractsEnrollments
+        ResourceAccess --> DomainModels["CampusFlow.Domain.Models<br/>(Core Domain Entities)"]
+        WebAPI --> UtilLogging["CampusFlow.Util.Logging<br/>(Infrastructure Logging)"]
+    end
 
-System_Db(sqliteDb, "SQLite Database", "Relational database persisting entity state via EF Core.")
+    ResourceAccess --> SQLite["SQLite Database"]
 
-Rel(client, webApi, "Sends HTTP Requests", "HTTPS/JSON")
-Rel(webApi, endpoints, "Dispatches traffic")
-Rel(endpoints, servicesEnrollment, "Invokes service methods")
-Rel(servicesEnrollment, rulesEnrollment, "Evaluates rules")
-Rel(servicesEnrollment, resourceAccess, "Queries / Persists data")
-Rel(resourceAccess, sqliteDb, "Reads/Writes SQL", "EF Core")
-
-Rel(endpoints, contractsEnrollments, "Uses DTOs")
-Rel(endpoints, contractsStudents, "Uses DTOs")
-Rel(endpoints, contractsCourses, "Uses DTOs")
-Rel(endpoints, contractsStatistics, "Uses DTOs")
-Rel(servicesEnrollment, contractsEnrollments, "Returns contracts")
-Rel(resourceAccess, domainModels, "Uses entities")
-Rel(webApi, utilLogging, "Configures logging")
-
-UpdateLayoutConfig($c4ShapeInRow="4", $c4BoundaryInRow="1")
+    class WebAPI,Endpoints,ServicesEnrollment,RulesEnrollment,ResourceAccess,ContractsEnrollments,ContractsStudents,ContractsCourses,ContractsStatistics,DomainModels,UtilLogging project;
+    class SQLite db;
 ```
