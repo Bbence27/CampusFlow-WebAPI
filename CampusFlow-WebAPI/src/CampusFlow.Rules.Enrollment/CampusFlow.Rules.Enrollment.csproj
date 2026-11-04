@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\CampusFlow.Domain.Models\CampusFlow.Domain.Models.csproj" />
+    <ProjectReference Include="..\CampusFlow.Contracts.Enrollments\CampusFlow.Contracts.Enrollments.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+</Project>

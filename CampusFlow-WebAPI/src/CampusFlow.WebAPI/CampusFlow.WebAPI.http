@@ -1,0 +1,98 @@
+@hostAddress = http://localhost:5252
+
+### List all courses
+GET {{hostAddress}}/api/courses
+
+### Get one course
+GET {{hostAddress}}/api/courses/1
+
+### Create a course
+POST {{hostAddress}}/api/courses
+Content-Type: application/json
+
+{
+  "code": "SEC301",
+  "title": "Web Application Security",
+  "credits": 5,
+  "capacity": 25
+}
+
+### Update a course
+PUT {{hostAddress}}/api/courses/1
+Content-Type: application/json
+
+{
+  "title": "Web APIs with ASP.NET Core 10",
+  "credits": 6,
+  "capacity": 30
+}
+
+### Create a course with invalid data (expect 400)
+POST {{hostAddress}}/api/courses
+Content-Type: application/json
+
+{
+  "code": "X",
+  "title": "",
+  "credits": 0,
+  "capacity": 1000
+}
+
+
+### Delete a course
+DELETE {{hostAddress}}/api/courses/3
+
+Accept: application/json
+
+### Enroll Ada in DB201 (expect 201)
+POST {{hostAddress}}/api/courses/2/enrollments
+Content-Type: application/json
+
+{ "studentId": 1 }
+
+### Enroll Ada in DB201 again (expect 409: already enrolled)
+POST {{hostAddress}}/api/courses/2/enrollments
+Content-Type: application/json
+
+{ "studentId": 1 }
+
+### Enroll Alan in DB201 (expect 201)
+POST {{hostAddress}}/api/courses/2/enrollments
+Content-Type: application/json
+
+{ "studentId": 2 }
+
+### Enroll Grace in DB201 (expect 409: course full)
+POST {{hostAddress}}/api/courses/2/enrollments
+Content-Type: application/json
+
+{ "studentId": 3 }
+
+### Enroll an unknown student (expect 404)
+POST {{hostAddress}}/api/courses/2/enrollments
+Content-Type: application/json
+
+{ "studentId": 99 }
+
+### List the enrollments of DB201
+GET {{hostAddress}}/api/courses/2/enrollments
+
+### Remove Alan from DB201 (expect 204)
+DELETE {{hostAddress}}/api/courses/2/enrollments/2
+
+### Enroll Grace in DB201 (expect 201: a place is free)
+POST {{hostAddress}}/api/courses/2/enrollments
+Content-Type: application/json
+
+### Search courses
+GET {{hostAddress}}/api/courses?search=Web
+
+### Filter courses by credits
+GET {{hostAddress}}/api/courses?minCredits=6
+
+### Get statistics
+GET {{hostAddress}}/api/statistics
+
+{ "studentId": 3 }
+
+###

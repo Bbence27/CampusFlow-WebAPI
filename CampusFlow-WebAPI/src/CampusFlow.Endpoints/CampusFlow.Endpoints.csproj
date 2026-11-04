@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CampusFlow.Contracts.Enrollments\CampusFlow.Contracts.Enrollments.csproj" />
+    <ProjectReference Include="..\CampusFlow.Contracts.Statistics\CampusFlow.Contracts.Statistics.csproj" />
+    <ProjectReference Include="..\CampusFlow.Contracts.Students\CampusFlow.Contracts.Students.csproj" />
+    <ProjectReference Include="..\CampusFlow.Contracts.Courses\CampusFlow.Contracts.Courses.csproj" />
+    <ProjectReference Include="..\CampusFlow.Domain.Models\CampusFlow.Domain.Models.csproj" />
+    <ProjectReference Include="..\CampusFlow.ResourceAccess.Sqlite\CampusFlow.ResourceAccess.Sqlite.csproj" />
+    <ProjectReference Include="..\CampusFlow.Services.Enrollment\CampusFlow.Services.Enrollment.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.14" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+</Project>

@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.12" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.14" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CampusFlow.EndPoints\CampusFlow.Endpoints.csproj" />
+    <ProjectReference Include="..\CampusFlow.ResourceAccess.Sqlite\CampusFlow.ResourceAccess.Sqlite.csproj" />
+    <ProjectReference Include="..\CampusFlow.Util.Logging\CampusFlow.Util.Logging.csproj" />
+    <ProjectReference Include="..\CampusFlow.Services.Enrollment\CampusFlow.Services.Enrollment.csproj" />
+  </ItemGroup>
+
+</Project>

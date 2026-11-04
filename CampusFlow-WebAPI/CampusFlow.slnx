@@ -1,0 +1,15 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/CampusFlow.Contracts.Courses/CampusFlow.Contracts.Courses.csproj" />
+    <Project Path="src/CampusFlow.Contracts.Enrollments/CampusFlow.Contracts.Enrollments.csproj" />
+    <Project Path="src/CampusFlow.Contracts.Statistics/CampusFlow.Contracts.Statistics.csproj" />
+    <Project Path="src/CampusFlow.Contracts.Students/CampusFlow.Contracts.Students.csproj" />
+    <Project Path="src/CampusFlow.Domain.Models/CampusFlow.Domain.Models.csproj" />
+    <Project Path="src/CampusFlow.Endpoints/CampusFlow.Endpoints.csproj" />
+    <Project Path="src/CampusFlow.ResourceAccess.Sqlite/CampusFlow.ResourceAccess.Sqlite.csproj" />
+    <Project Path="src/CampusFlow.Rules.Enrollment/CampusFlow.Rules.Enrollment.csproj" />
+    <Project Path="src/CampusFlow.Services.Enrollment/CampusFlow.Services.Enrollment.csproj" />
+    <Project Path="src/CampusFlow.Util.Logging/CampusFlow.Util.Logging.csproj" />
+    <Project Path="src/CampusFlow.WebAPI/CampusFlow.WebAPI.csproj" />
+  </Folder>
+</Solution>
