@@ -8,3 +8,5 @@ A modular .NET 10.0 monolithic-to-modular refactored application designed with s
 3. Run the API:
    ```bash
    dotnet run --project src/CampusFlow.WebAPI
+
+* **[Architecture & Module Breakdown](ARCHITECTURE.md)**: Detailed explanations of module responsibilities, volatilities, and trade-offs for all 11 projects.
